@@ -8,7 +8,7 @@ import React from 'react';
 import { EffectComposer, Bloom, Vignette, Noise } from '@react-three/postprocessing';
 import { BlendFunction } from 'postprocessing';
 
-export const Effects: React.FC = () => {
+export const Effects = () => {
   return (
     <EffectComposer disableNormalPass multisampling={0}>
       {/* Tighter bloom to avoid fog: High threshold, moderate radius */}
