@@ -279,8 +279,8 @@ export const HUD: React.FC = () => {
 
         {/* Word Collection Status */}
         {/* Force single line (flex-nowrap) and use adaptive gaps */}
-        {/* Changed top-16 to top-32 on mobile to avoid overlap with HUD elements */}
-        <div className={`absolute top-32 md:top-24 left-1/2 transform -translate-x-1/2 flex flex-nowrap justify-center ${gapClass} max-w-full px-1 z-40`}>
+        {/* Adjusted top position to be higher on mobile (top-20) now that HUD is cleaner */}
+        <div className={`absolute top-20 md:top-24 left-1/2 transform -translate-x-1/2 flex flex-nowrap justify-center ${gapClass} max-w-full px-1 z-40`}>
             {targetWord.map((char, idx) => {
                 const isCollected = collectedLetters.includes(idx);
                 // Cycle through colors
