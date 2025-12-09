@@ -238,8 +238,12 @@ export const HUD: React.FC = () => {
         {/* Top Bar */}
         <div className="flex justify-between items-start w-full">
             {/* Left: Score */}
-            <div className="flex flex-col">
-                <div className="text-3xl md:text-5xl font-bold text-white drop-shadow-md font-cyber">
+            <div className="flex flex-col items-start">
+                <div className="flex items-center gap-1 md:gap-2 mb-0 md:mb-1 opacity-90">
+                    <Fish className="w-4 h-4 md:w-6 md:h-6 text-yellow-400 fill-yellow-400" />
+                    <span className="text-yellow-400 font-bold text-xs md:text-lg font-cyber tracking-widest uppercase">РИБКИ</span>
+                </div>
+                <div className="text-3xl md:text-5xl font-bold text-white drop-shadow-md font-cyber leading-none">
                     {score.toLocaleString()}
                 </div>
             </div>
