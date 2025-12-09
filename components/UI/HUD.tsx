@@ -274,9 +274,9 @@ export const HUD: React.FC = () => {
             НИВО {level}
         </div>
 
-        {/* Active Skill Indicator */}
+        {/* Active Skill Indicator - Moved Down to top-48 */}
         {isImmortalityActive && (
-             <div className="absolute top-32 left-1/2 transform -translate-x-1/2 text-yellow-300 font-bold text-xl md:text-2xl animate-pulse flex items-center drop-shadow-md z-40 whitespace-nowrap">
+             <div className="absolute top-48 left-1/2 transform -translate-x-1/2 text-yellow-300 font-bold text-xl md:text-2xl animate-pulse flex items-center drop-shadow-md z-40 whitespace-nowrap">
                  <Shield className="mr-2 fill-yellow-300" /> БЕЗСМЪРТЕН
              </div>
         )}
