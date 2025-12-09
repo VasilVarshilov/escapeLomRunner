@@ -105,7 +105,8 @@ const ShopScreen: React.FC = () => {
 export const HUD: React.FC = () => {
   const { score, lives, maxLives, collectedLetters, status, level, restartGame, startGame, gemsCollected, distance, isImmortalityActive, speed, targetWord } = useStore();
   
-  const containerClass = "absolute inset-0 pointer-events-none flex flex-col justify-between p-4 md:p-8 z-50";
+  // Added pb-20 for mobile (to clear safe area/nav bars) and reverted to pb-8 for desktop (md)
+  const containerClass = "absolute inset-0 pointer-events-none flex flex-col justify-between p-4 pb-20 md:p-8 md:pb-8 z-50";
 
   if (status === GameStatus.SHOP) {
       return <ShopScreen />;
