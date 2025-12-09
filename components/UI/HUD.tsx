@@ -61,7 +61,7 @@ const ShopScreen: React.FC = () => {
 
     return (
         <div className="absolute inset-0 bg-black/90 z-[100] text-white pointer-events-auto backdrop-blur-md overflow-y-auto">
-             <div className="flex flex-col items-center justify-center min-h-full py-8 px-4">
+             <div className="flex flex-col items-center justify-center min-h-full pt-10 pb-32 px-4">
                  <h2 className="text-3xl md:text-5xl font-black text-yellow-400 mb-2 font-cyber tracking-widest text-center uppercase">Вече не си отЛомка</h2>
                  <div className="flex items-center text-blue-300 mb-6 md:mb-8">
                      <span className="text-base md:text-lg mr-2">ПАРИ (РИБИ):</span>
@@ -93,7 +93,7 @@ const ShopScreen: React.FC = () => {
 
                  <button 
                     onClick={closeShop}
-                    className="flex items-center px-8 md:px-10 py-3 md:py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold text-lg md:text-xl rounded hover:scale-105 transition-all shadow-[0_0_20px_rgba(0,255,0,0.4)]"
+                    className="flex items-center px-8 md:px-10 py-3 md:py-4 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold text-lg md:text-xl rounded hover:scale-105 transition-all shadow-[0_0_20px_rgba(0,255,0,0.4)] mb-8"
                  >
                      ПРОДЪЛЖИ НАПРЕД <Play className="ml-2 w-5 h-5" fill="white" />
                  </button>
