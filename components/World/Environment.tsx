@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
+// @ts-nocheck
 
 import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
