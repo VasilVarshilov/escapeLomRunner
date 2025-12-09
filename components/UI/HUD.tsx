@@ -218,11 +218,18 @@ export const HUD: React.FC = () => {
 
   // Adaptive sizing for long words on mobile
   const wordLen = targetWord.length;
-  let boxClass = "w-8 h-10 md:w-10 md:h-12 text-lg md:text-xl"; // Default
+  // Default (<= 8)
+  let boxClass = "w-8 h-10 md:w-10 md:h-12 text-lg md:text-xl border-2"; 
+  let gapClass = "gap-1 md:gap-2";
+
   if (wordLen > 12) {
-      boxClass = "w-5 h-7 md:w-10 md:h-12 text-xs md:text-xl border-[1px]";
-  } else if (wordLen > 7) {
-      boxClass = "w-6 h-8 md:w-10 md:h-12 text-sm md:text-xl";
+      // 13+ chars: Very small to fit ~15 chars in 320px
+      boxClass = "w-5 h-7 md:w-10 md:h-12 text-[10px] md:text-xl border-[1px]";
+      gapClass = "gap-px md:gap-2"; 
+  } else if (wordLen > 8) {
+      // 9-12 chars
+      boxClass = "w-6 h-8 md:w-10 md:h-12 text-sm md:text-xl border-2";
+      gapClass = "gap-1 md:gap-2";
   }
 
   return (
@@ -258,7 +265,8 @@ export const HUD: React.FC = () => {
         )}
 
         {/* Word Collection Status */}
-        <div className="absolute top-16 md:top-24 left-1/2 transform -translate-x-1/2 flex flex-wrap justify-center gap-1 md:gap-2 max-w-[98vw] px-1 z-40">
+        {/* Force single line (flex-nowrap) and use adaptive gaps */}
+        <div className={`absolute top-16 md:top-24 left-1/2 transform -translate-x-1/2 flex flex-nowrap justify-center ${gapClass} max-w-full px-1 z-40`}>
             {targetWord.map((char, idx) => {
                 const isCollected = collectedLetters.includes(idx);
                 // Cycle through colors
@@ -273,7 +281,7 @@ export const HUD: React.FC = () => {
                             backgroundColor: isCollected ? color : 'rgba(0, 0, 0, 0.5)',
                             boxShadow: isCollected ? `0 0 10px ${color}` : 'none',
                         }}
-                        className={`${boxClass} flex items-center justify-center border-2 font-black font-cyber rounded-md transform transition-all duration-300`}
+                        className={`${boxClass} flex items-center justify-center font-black font-cyber rounded-md transform transition-all duration-300`}
                     >
                         {char}
                     </div>
