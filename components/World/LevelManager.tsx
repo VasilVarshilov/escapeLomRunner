@@ -50,10 +50,6 @@ const CAR_WHEEL_GEO = new THREE.CylinderGeometry(0.35, 0.35, 0.3, 12);
 // FISH (Gem)
 const FISH_BODY = new THREE.ConeGeometry(0.3, 0.6, 8);
 
-// SHOP
-const SHOP_FRAME_GEO = new THREE.BoxGeometry(1, 7, 1);
-const SHOP_BACK_GEO = new THREE.BoxGeometry(1, 5, 1.2);
-
 // --- MOVEMENT SPEEDS ---
 const MISSILE_SPEED = 12; 
 const BARREL_SPEED_X = 5;
@@ -673,7 +669,8 @@ const GameEntity: React.FC<{ data: GameObject }> = React.memo(({ data }) => {
             const time = state.clock.elapsedTime;
             
             if (data.type === ObjectType.SHOP_PORTAL) {
-                 visualRef.current.scale.setScalar(1 + Math.sin(time * 2) * 0.02);
+                 // Gentle pulse scale
+                 visualRef.current.scale.setScalar(1 + Math.sin(time * 3) * 0.03);
             } else if (data.type === ObjectType.MISSILE) {
                  visualRef.current.rotation.x += delta * 10;
                  visualRef.current.rotation.z += delta * 5;
@@ -725,25 +722,61 @@ const GameEntity: React.FC<{ data: GameObject }> = React.memo(({ data }) => {
         }
     });
 
+    const portalWidth = laneCount * LANE_WIDTH + 4;
+
     return (
         <group ref={groupRef} position={[data.position[0], 0, data.position[2]]}>
             <group ref={visualRef} position={[0, data.position[1], 0]}>
                 
-                {/* --- SHOP PORTAL --- */}
+                {/* --- SHOP PORTAL (New Design) --- */}
                 {data.type === ObjectType.SHOP_PORTAL && (
                     <group>
-                         <mesh position={[0, 3, 0]} geometry={SHOP_FRAME_GEO} scale={[laneCount * LANE_WIDTH + 2, 1, 1]}>
-                             <meshStandardMaterial color="#4a3b2a" />
+                         {/* Left Neon Pillar */}
+                         <mesh position={[-portalWidth/2 + 0.5, 3, 0]}>
+                             <cylinderGeometry args={[0.6, 0.6, 6, 16]} />
+                             <meshStandardMaterial color="#00ffff" emissive="#00ffff" emissiveIntensity={2} />
                          </mesh>
-                         <mesh position={[0, 2, 0]} geometry={SHOP_BACK_GEO} scale={[laneCount * LANE_WIDTH, 1, 1]}>
-                              <meshBasicMaterial color="#000000" />
+                         {/* Right Neon Pillar */}
+                         <mesh position={[portalWidth/2 - 0.5, 3, 0]}>
+                             <cylinderGeometry args={[0.6, 0.6, 6, 16]} />
+                             <meshStandardMaterial color="#00ffff" emissive="#00ffff" emissiveIntensity={2} />
                          </mesh>
-                         <Html transform position={[0, 5, 0.6]} center>
-                            <div className="text-white font-black text-3xl whitespace-nowrap font-cyber" style={{ 
-                                textShadow: '0 0 10px rgba(255,255,255,0.8)',
-                                userSelect: 'none'
-                            }}>
-                                Вече не си отЛомка
+                         {/* Top Beam */}
+                         <mesh position={[0, 5.5, 0]}>
+                             <boxGeometry args={[portalWidth, 1.2, 1.2]} />
+                             <meshStandardMaterial color="#d946ef" emissive="#d946ef" emissiveIntensity={2} />
+                         </mesh>
+
+                         {/* The "Void" / Portal Curtain - Semi-transparent */}
+                         <mesh position={[0, 2.5, 0.2]}>
+                             <planeGeometry args={[portalWidth - 1.5, 5.5]} />
+                             <meshBasicMaterial color="#2a0a3b" transparent opacity={0.85} />
+                         </mesh>
+                         
+                         {/* Neon Grid on Portal Surface */}
+                         <mesh position={[0, 2.5, 0.25]} rotation={[0,0, Math.PI/4]}>
+                              <planeGeometry args={[4, 4, 2, 2]} />
+                              <meshBasicMaterial color="#ff00ff" wireframe transparent opacity={0.1} />
+                         </mesh>
+
+                         {/* Floating HTML Sign */}
+                         <Html transform position={[0, 3.5, 1]} center distanceFactor={10}>
+                            <div className="flex flex-col items-center justify-center pointer-events-none select-none">
+                                <div className="text-6xl animate-bounce mb-2 filter drop-shadow-[0_0_10px_rgba(255,255,0,0.8)]">🍻</div>
+                                
+                                <div className="relative font-black text-3xl md:text-5xl whitespace-nowrap font-cyber text-center px-6 py-3 rounded-2xl backdrop-blur-sm" 
+                                     style={{ 
+                                        color: '#fff',
+                                        textShadow: '0 0 10px #ff00ff, 0 0 20px #ff00ff, 0 0 40px #d946ef',
+                                        background: 'rgba(0,0,0,0.5)',
+                                        border: '3px solid #00ffff',
+                                        boxShadow: '0 0 20px #00ffff, inset 0 0 20px rgba(0,255,255,0.2)'
+                                     }}>
+                                    Вече не си отЛомка
+                                    <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 text-xs md:text-sm text-cyan-300 font-mono tracking-[0.3em] bg-black/80 px-2 py-0.5 rounded">
+                                        ПОЗДРАВЛЕНИЯ
+                                    </div>
+                                </div>
                             </div>
                          </Html>
                     </group>
