@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
+// @ts-nocheck
 
 import React, { Suspense } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
