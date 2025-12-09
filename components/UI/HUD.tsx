@@ -216,6 +216,15 @@ export const HUD: React.FC = () => {
     );
   }
 
+  // Adaptive sizing for long words on mobile
+  const wordLen = targetWord.length;
+  let boxClass = "w-8 h-10 md:w-10 md:h-12 text-lg md:text-xl"; // Default
+  if (wordLen > 12) {
+      boxClass = "w-5 h-7 md:w-10 md:h-12 text-xs md:text-xl border-[1px]";
+  } else if (wordLen > 7) {
+      boxClass = "w-6 h-8 md:w-10 md:h-12 text-sm md:text-xl";
+  }
+
   return (
     <div className={containerClass}>
         {/* Top Bar */}
@@ -243,13 +252,13 @@ export const HUD: React.FC = () => {
 
         {/* Active Skill Indicator */}
         {isImmortalityActive && (
-             <div className="absolute top-28 left-1/2 transform -translate-x-1/2 text-yellow-300 font-bold text-xl md:text-2xl animate-pulse flex items-center drop-shadow-md">
+             <div className="absolute top-32 left-1/2 transform -translate-x-1/2 text-yellow-300 font-bold text-xl md:text-2xl animate-pulse flex items-center drop-shadow-md z-40 whitespace-nowrap">
                  <Shield className="mr-2 fill-yellow-300" /> БЕЗСМЪРТЕН
              </div>
         )}
 
         {/* Word Collection Status */}
-        <div className="absolute top-16 md:top-24 left-1/2 transform -translate-x-1/2 flex space-x-1 md:space-x-2">
+        <div className="absolute top-16 md:top-24 left-1/2 transform -translate-x-1/2 flex flex-wrap justify-center gap-1 md:gap-2 max-w-[98vw] px-1 z-40">
             {targetWord.map((char, idx) => {
                 const isCollected = collectedLetters.includes(idx);
                 // Cycle through colors
@@ -264,7 +273,7 @@ export const HUD: React.FC = () => {
                             backgroundColor: isCollected ? color : 'rgba(0, 0, 0, 0.5)',
                             boxShadow: isCollected ? `0 0 10px ${color}` : 'none',
                         }}
-                        className={`w-8 h-10 md:w-10 md:h-12 flex items-center justify-center border-2 font-black text-lg md:text-xl font-cyber rounded-md transform transition-all duration-300`}
+                        className={`${boxClass} flex items-center justify-center border-2 font-black font-cyber rounded-md transform transition-all duration-300`}
                     >
                         {char}
                     </div>
