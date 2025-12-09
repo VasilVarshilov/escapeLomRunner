@@ -1001,7 +1001,7 @@ const GameEntity: React.FC<{ data: GameObject }> = React.memo(({ data }) => {
                             <Html transform center>
                                 <div className="font-black text-6xl font-cyber" style={{ 
                                     color: data.color, 
-                                    textShadow: `0 0 20px ${data.color}`,
+                                    textShadow: `0 0 5px ${data.color}`,
                                     userSelect: 'none'
                                 }}>
                                     {data.value}
