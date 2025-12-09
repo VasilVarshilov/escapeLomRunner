@@ -105,8 +105,8 @@ const ShopScreen: React.FC = () => {
 export const HUD: React.FC = () => {
   const { score, lives, maxLives, collectedLetters, status, level, restartGame, startGame, gemsCollected, distance, isImmortalityActive, speed, targetWord } = useStore();
   
-  // Added pb-20 for mobile (to clear safe area/nav bars) and reverted to pb-8 for desktop (md)
-  const containerClass = "absolute inset-0 pointer-events-none flex flex-col justify-between p-4 pb-20 md:p-8 md:pb-8 z-50";
+  // Adjusted padding since bottom element is gone
+  const containerClass = "absolute inset-0 pointer-events-none flex flex-col justify-between p-4 md:p-8 z-50";
 
   if (status === GameStatus.SHOP) {
       return <ShopScreen />;
@@ -237,19 +237,31 @@ export const HUD: React.FC = () => {
     <div className={containerClass}>
         {/* Top Bar */}
         <div className="flex justify-between items-start w-full">
+            {/* Left: Score */}
             <div className="flex flex-col">
                 <div className="text-3xl md:text-5xl font-bold text-white drop-shadow-md font-cyber">
                     {score.toLocaleString()}
                 </div>
             </div>
             
-            <div className="flex space-x-1 md:space-x-2">
-                {[...Array(maxLives)].map((_, i) => (
-                    <Heart 
-                        key={i} 
-                        className={`w-6 h-6 md:w-8 md:h-8 ${i < lives ? 'text-red-500 fill-red-500' : 'text-gray-800 fill-gray-800'} drop-shadow-sm`} 
-                    />
-                ))}
+            {/* Right: Hearts + Beer Speed */}
+            <div className="flex flex-col items-end gap-1 md:gap-2">
+                <div className="flex space-x-1 md:space-x-2">
+                    {[...Array(maxLives)].map((_, i) => (
+                        <Heart 
+                            key={i} 
+                            className={`w-6 h-6 md:w-8 md:h-8 ${i < lives ? 'text-red-500 fill-red-500' : 'text-gray-800 fill-gray-800'} drop-shadow-sm`} 
+                        />
+                    ))}
+                </div>
+                
+                {/* Relocated Beer Counter */}
+                <div className="flex items-center space-x-1 text-white opacity-90 bg-black/40 px-2 py-1 rounded-md backdrop-blur-sm border border-white/10 shadow-sm">
+                     <Beer className="w-3 h-3 md:w-5 md:h-5 animate-pulse text-yellow-400" />
+                     <span className="font-mono text-[10px] md:text-base font-bold tracking-wider">
+                        БИРИЧКИ В ЧАС {Math.round((speed / RUN_SPEED_BASE) * 100)}
+                     </span>
+                </div>
             </div>
         </div>
         
@@ -290,13 +302,8 @@ export const HUD: React.FC = () => {
             })}
         </div>
 
-        {/* Bottom Overlay */}
-        <div className="w-full flex justify-end items-end">
-             <div className="flex items-center space-x-2 text-white opacity-90 bg-black/30 px-2 py-1 rounded">
-                 <Beer className="w-4 h-4 md:w-6 md:h-6 animate-pulse text-yellow-400" />
-                 <span className="font-mono text-base md:text-xl">БИРИЧКИ В ЧАС {Math.round((speed / RUN_SPEED_BASE) * 100)}</span>
-             </div>
-        </div>
+        {/* Empty Bottom Div to maintain flex spacing if needed, though 'justify-between' handles it */}
+        <div></div>
     </div>
   );
 };
