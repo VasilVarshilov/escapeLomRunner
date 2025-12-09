@@ -256,7 +256,7 @@ export const HUD: React.FC = () => {
                 </div>
                 
                 {/* Relocated Beer Counter */}
-                <div className="flex items-center space-x-1 text-white opacity-90 bg-black/40 px-2 py-1 rounded-md backdrop-blur-sm border border-white/10 shadow-sm">
+                <div className="flex items-center space-x-1 text-white opacity-90 bg-black/40 px-1.5 py-0.5 rounded-md backdrop-blur-sm border border-white/10 shadow-sm">
                      <Beer className="w-3 h-3 md:w-5 md:h-5 animate-pulse text-yellow-400" />
                      <span className="font-mono text-[10px] md:text-base font-bold tracking-wider">
                         БИРИЧКИ В ЧАС {Math.round((speed / RUN_SPEED_BASE) * 100)}
@@ -279,7 +279,8 @@ export const HUD: React.FC = () => {
 
         {/* Word Collection Status */}
         {/* Force single line (flex-nowrap) and use adaptive gaps */}
-        <div className={`absolute top-16 md:top-24 left-1/2 transform -translate-x-1/2 flex flex-nowrap justify-center ${gapClass} max-w-full px-1 z-40`}>
+        {/* Changed top-16 to top-32 on mobile to avoid overlap with HUD elements */}
+        <div className={`absolute top-32 md:top-24 left-1/2 transform -translate-x-1/2 flex flex-nowrap justify-center ${gapClass} max-w-full px-1 z-40`}>
             {targetWord.map((char, idx) => {
                 const isCollected = collectedLetters.includes(idx);
                 // Cycle through colors
