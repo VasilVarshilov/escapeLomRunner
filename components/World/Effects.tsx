@@ -10,8 +10,8 @@ import { BlendFunction } from 'postprocessing';
 
 export const Effects = () => {
   return (
-    <EffectComposer disableNormalPass multisampling={0}>
-      {/* Tighter bloom to avoid fog: High threshold, moderate radius */}
+    <EffectComposer enableNormalPass={false} multisampling={0}>
+      {/* @ts-ignore */}
       <Bloom 
         luminanceThreshold={0.75} 
         mipmapBlur 
@@ -19,7 +19,9 @@ export const Effects = () => {
         radius={0.6}
         levels={8}
       />
+      {/* @ts-ignore */}
       <Noise opacity={0.05} blendFunction={BlendFunction.OVERLAY} />
+      {/* @ts-ignore */}
       <Vignette eskil={false} offset={0.1} darkness={0.5} />
     </EffectComposer>
   );
