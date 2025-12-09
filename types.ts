@@ -3,8 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-import { ThreeElements } from '@react-three/fiber';
-
 export enum GameStatus {
   MENU = 'MENU',
   PLAYING = 'PLAYING',
@@ -71,11 +69,4 @@ export interface ShopItem {
     cost: number;
     icon: any; // Lucide icon component
     oneTime?: boolean; // If true, remove from pool after buying
-}
-
-// Augment the global JSX namespace to include Three.js elements
-declare global {
-  namespace JSX {
-    interface IntrinsicElements extends ThreeElements {}
-  }
 }
