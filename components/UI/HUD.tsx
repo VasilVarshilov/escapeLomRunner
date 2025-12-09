@@ -238,10 +238,10 @@ export const HUD: React.FC = () => {
         {/* Top Bar */}
         <div className="flex justify-between items-start w-full">
             {/* Left: Score */}
-            <div className="flex flex-col items-start">
-                <div className="flex items-center gap-1 md:gap-2 mb-0 md:mb-1 opacity-90">
-                    <Fish className="w-4 h-4 md:w-6 md:h-6 text-yellow-400 fill-yellow-400" />
-                    <span className="text-yellow-400 font-bold text-xs md:text-lg font-cyber tracking-widest uppercase">РИБКИ</span>
+            <div className="flex flex-col items-start z-50">
+                <div className="flex items-center gap-1 md:gap-2 mb-1">
+                    <Fish className="w-5 h-5 md:w-6 md:h-6 text-yellow-400 fill-yellow-400 drop-shadow-sm" />
+                    <span className="text-yellow-400 font-bold text-sm md:text-lg font-cyber tracking-widest uppercase drop-shadow-sm">РИБКИ</span>
                 </div>
                 <div className="text-3xl md:text-5xl font-bold text-white drop-shadow-md font-cyber leading-none">
                     {score.toLocaleString()}
@@ -283,8 +283,8 @@ export const HUD: React.FC = () => {
 
         {/* Word Collection Status */}
         {/* Force single line (flex-nowrap) and use adaptive gaps */}
-        {/* Adjusted top position to be higher on mobile (top-14) to fill space under Level indicator */}
-        <div className={`absolute top-14 md:top-24 left-1/2 transform -translate-x-1/2 flex flex-nowrap justify-center ${gapClass} max-w-full px-1 z-40`}>
+        {/* Adjusted top position to be higher on mobile (top-24) to avoid overlap with Beer counter */}
+        <div className={`absolute top-24 md:top-32 left-1/2 transform -translate-x-1/2 flex flex-nowrap justify-center ${gapClass} max-w-full px-1 z-40`}>
             {targetWord.map((char, idx) => {
                 const isCollected = collectedLetters.includes(idx);
                 // Cycle through colors
