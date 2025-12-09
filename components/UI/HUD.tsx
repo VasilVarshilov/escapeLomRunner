@@ -37,7 +37,7 @@ const SHOP_ITEMS: ShopItem[] = [
     {
         id: 'IMMORTAL',
         name: 'БЕЗСМЪРТИЕ',
-        description: 'Вечеряш в бистро "Рибката" и ставаш безсмъртен за 30 секунди с Space/Tap.',
+        description: 'Вечеряш в бистро "Рибката" и ставаш безсмъртен за 25 секунди с Space/Tap.',
         cost: 3000,
         icon: Shield,
         oneTime: true
@@ -62,7 +62,11 @@ const ShopScreen: React.FC = () => {
     return (
         <div className="absolute inset-0 bg-black/90 z-[100] text-white pointer-events-auto backdrop-blur-md overflow-y-auto">
              <div className="flex flex-col items-center justify-center min-h-full pt-10 pb-32 px-4">
-                 <h2 className="text-3xl md:text-5xl font-black text-yellow-400 mb-2 font-cyber tracking-widest text-center uppercase">Вече не си отЛомка</h2>
+                 <div className="text-center mb-6 md:mb-8">
+                     <h2 className="text-3xl md:text-5xl font-black text-yellow-400 mb-2 font-cyber tracking-widest uppercase leading-tight">Вече не си отЛомка</h2>
+                     <p className="text-blue-200 text-xs md:text-lg font-mono tracking-wider uppercase opacity-80">Избяга от Лом, но Лом не може да избяга от теб!</p>
+                 </div>
+
                  <div className="flex items-center text-blue-300 mb-6 md:mb-8">
                      <span className="text-base md:text-lg mr-2">ПАРИ (РИБИ):</span>
                      <span className="text-xl md:text-2xl font-bold">{score.toLocaleString()}</span>
