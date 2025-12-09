@@ -37,7 +37,7 @@ const SHOP_ITEMS: ShopItem[] = [
     {
         id: 'IMMORTAL',
         name: 'БЕЗСМЪРТИЕ',
-        description: 'Вечеряш в бистро "Рибката" и ставаш безсмъртен за 5 секунди с Space/Tap.',
+        description: 'Вечеряш в бистро "Рибката" и ставаш безсмъртен за 30 секунди с Space/Tap.',
         cost: 3000,
         icon: Shield,
         oneTime: true
