@@ -208,7 +208,7 @@ export const useStore = create<GameState>((set, get) => ({
           });
           setTimeout(() => {
               set({ isImmortalityActive: false });
-          }, 25000); // 25 seconds
+          }, 30000); // 30 seconds
       }
   },
 
