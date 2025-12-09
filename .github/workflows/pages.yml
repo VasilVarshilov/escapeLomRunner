@@ -25,9 +25,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+          # No cache setting here to avoid "lock file not found" error.
+          # We want a fresh install anyway for the Linux environment binaries.
 
       - name: Clean Install
-        # Removing package-lock and node_modules forces a fresh fetch of platform-specific binaries (rollup-linux)
+        # Remove any existing lock file and node_modules to ensure a fresh install
+        # This is critical for downloading the correct platform-specific binaries (like rollup-linux)
         run: |
           rm -rf node_modules
           rm -f package-lock.json
