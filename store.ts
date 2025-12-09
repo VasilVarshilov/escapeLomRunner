@@ -202,7 +202,10 @@ export const useStore = create<GameState>((set, get) => ({
   activateImmortality: () => {
       const { hasImmortality, isImmortalityActive } = get();
       if (hasImmortality && !isImmortalityActive) {
-          set({ isImmortalityActive: true });
+          set({ 
+            isImmortalityActive: true,
+            hasImmortality: false // Consume the item immediately
+          });
           setTimeout(() => {
               set({ isImmortalityActive: false });
           }, 5000);
