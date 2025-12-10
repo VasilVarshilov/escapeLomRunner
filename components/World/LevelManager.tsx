@@ -63,10 +63,17 @@ const BOSS_BOAT_HULL_MAIN = new THREE.BoxGeometry(4, 1.5, 8);
 const BOSS_BOAT_HULL_BOW = new THREE.ConeGeometry(2, 3, 4);
 const BOSS_BOAT_CABIN = new THREE.BoxGeometry(3.5, 2.5, 2.5);
 const BOSS_BOAT_MAST = new THREE.CylinderGeometry(0.1, 0.15, 5);
-const BOSS_TORSO = new THREE.CylinderGeometry(0.6, 0.5, 1.4, 8);
-const BOSS_HEAD = new THREE.SphereGeometry(0.4, 16, 16);
-const BOSS_HAT_BRIM = new THREE.CylinderGeometry(0.6, 0.6, 0.05, 16);
-const BOSS_HAT_TOP = new THREE.CylinderGeometry(0.35, 0.35, 0.4, 16);
+
+// New Nikolai Design Geometries
+const NIKOLAI_TORSO_GEO = new THREE.CylinderGeometry(0.5, 0.45, 1.3, 16);
+const NIKOLAI_STRIPE_GEO = new THREE.TorusGeometry(0.46, 0.05, 8, 16); // Stripes for shirt
+const NIKOLAI_HEAD_GEO = new THREE.BoxGeometry(0.5, 0.6, 0.55); // More defined head shape
+const NIKOLAI_BEARD_GEO = new THREE.CylinderGeometry(0.3, 0.1, 0.5, 16); // Big beard
+const NIKOLAI_NOSE_GEO = new THREE.ConeGeometry(0.08, 0.2, 8);
+const NIKOLAI_CAP_BASE = new THREE.CylinderGeometry(0.52, 0.52, 0.25, 16);
+const NIKOLAI_CAP_TOP = new THREE.CylinderGeometry(0.65, 0.65, 0.1, 16);
+const NIKOLAI_VISOR = new THREE.BoxGeometry(0.6, 0.05, 0.4);
+
 const BOSS_ARM = new THREE.CylinderGeometry(0.15, 0.12, 1.0);
 const BOSS_ROD = new THREE.CylinderGeometry(0.03, 0.05, 4.5, 8);
 
@@ -356,10 +363,6 @@ const VictoryScene: React.FC = () => {
                 </mesh>
                 {/* Windows */}
                 <mesh position={[-1, 2, 1.51]}>
-                    <planeGeometry args={[0.8, 0.8]} />
-                    <meshStandardMaterial color="#87CEEB" />
-                </mesh>
-                <mesh position={[1, 2, 1.51]}>
                     <planeGeometry args={[0.8, 0.8]} />
                     <meshStandardMaterial color="#87CEEB" />
                 </mesh>
@@ -1397,49 +1400,99 @@ const GameEntity: React.FC<{ data: GameObject }> = React.memo(({ data }) => {
                                     <meshStandardMaterial color="red" side={THREE.DoubleSide} />
                                 </mesh>
 
-                                {/* Nikolai Model */}
+                                {/* Nikolai Model (UPDATED DESIGN) */}
                                 <group position={[0, 1.2, 1]}> 
-                                    <mesh geometry={BOSS_TORSO} position={[0, 1.0, 0]}>
-                                        <meshStandardMaterial color="#000080" /> 
-                                    </mesh>
-                                    <mesh position={[0, 2.1, 0]} geometry={BOSS_HEAD}>
-                                        <meshStandardMaterial color="#ffccaa" />
-                                    </mesh>
-                                    <mesh position={[0, 1.9, 0.35]}>
-                                        <boxGeometry args={[0.5, 0.4, 0.3]} />
-                                        <meshStandardMaterial color="#333" />
-                                    </mesh>
-                                    <mesh position={[0.15, 2.2, 0.35]}>
-                                        <sphereGeometry args={[0.05]} />
-                                        <meshBasicMaterial color="black" />
-                                    </mesh>
-                                    <mesh position={[-0.15, 2.2, 0.35]}>
-                                        <sphereGeometry args={[0.05]} />
-                                        <meshBasicMaterial color="black" />
-                                    </mesh>
-                                    <group position={[0, 2.5, 0]}>
-                                        <mesh geometry={BOSS_HAT_BRIM}>
-                                            <meshStandardMaterial color="#FFFF00" />
+                                    {/* Torso - Sailor Shirt */}
+                                    <group position={[0, 1.0, 0]}>
+                                        <mesh geometry={NIKOLAI_TORSO_GEO}>
+                                            <meshStandardMaterial color="#ffffff" /> {/* White Shirt */}
                                         </mesh>
-                                        <mesh geometry={BOSS_HAT_TOP} position={[0, 0.2, 0]}>
-                                            <meshStandardMaterial color="#FFFF00" />
+                                        {/* Stripes (3 rings) */}
+                                        <mesh geometry={NIKOLAI_STRIPE_GEO} position={[0, 0.2, 0]} rotation={[Math.PI/2, 0, 0]}>
+                                            <meshStandardMaterial color="#0000aa" />
+                                        </mesh>
+                                        <mesh geometry={NIKOLAI_STRIPE_GEO} position={[0, 0.0, 0]} rotation={[Math.PI/2, 0, 0]}>
+                                            <meshStandardMaterial color="#0000aa" />
+                                        </mesh>
+                                        <mesh geometry={NIKOLAI_STRIPE_GEO} position={[0, -0.2, 0]} rotation={[Math.PI/2, 0, 0]}>
+                                            <meshStandardMaterial color="#0000aa" />
                                         </mesh>
                                     </group>
-                                    <group position={[0.6, 1.5, 0.2]} rotation={[0.2, 0, -0.2]}>
+
+                                    {/* Head & Beard */}
+                                    <group position={[0, 2.0, 0]}>
+                                        <mesh geometry={NIKOLAI_HEAD_GEO}>
+                                            <meshStandardMaterial color="#ffccaa" />
+                                        </mesh>
+                                        {/* Big Dark Beard */}
+                                        <mesh geometry={NIKOLAI_BEARD_GEO} position={[0, -0.25, 0.15]} rotation={[0.2, 0, 0]}>
+                                            <meshStandardMaterial color="#1a1a1a" />
+                                        </mesh>
+                                        {/* Nose */}
+                                        <mesh geometry={NIKOLAI_NOSE_GEO} position={[0, 0.05, 0.3]} rotation={[Math.PI/2, 0, 0]}>
+                                            <meshStandardMaterial color="#eebb99" />
+                                        </mesh>
+                                        {/* Eyes */}
+                                        <mesh position={[0.12, 0.15, 0.28]}>
+                                            <sphereGeometry args={[0.06]} />
+                                            <meshBasicMaterial color="white" />
+                                        </mesh>
+                                        <mesh position={[0.12, 0.15, 0.33]}>
+                                            <sphereGeometry args={[0.025]} />
+                                            <meshBasicMaterial color="black" />
+                                        </mesh>
+                                        <mesh position={[-0.12, 0.15, 0.28]}>
+                                            <sphereGeometry args={[0.06]} />
+                                            <meshBasicMaterial color="white" />
+                                        </mesh>
+                                        <mesh position={[-0.12, 0.15, 0.33]}>
+                                            <sphereGeometry args={[0.025]} />
+                                            <meshBasicMaterial color="black" />
+                                        </mesh>
+
+                                        {/* Captain's Hat (Blue with Visor) */}
+                                        <group position={[0, 0.45, 0]}>
+                                            <mesh geometry={NIKOLAI_CAP_BASE}>
+                                                <meshStandardMaterial color="#000080" /> {/* Navy Blue */}
+                                            </mesh>
+                                            <mesh geometry={NIKOLAI_CAP_TOP} position={[0, 0.15, 0]}>
+                                                <meshStandardMaterial color="#ffffff" /> {/* White Top often seen, or Blue if user insisted only blue */}
+                                            </mesh>
+                                            <mesh geometry={NIKOLAI_VISOR} position={[0, -0.1, 0.35]} rotation={[0.2, 0, 0]}>
+                                                <meshStandardMaterial color="#000000" roughness={0.1} /> {/* Shiny Black Visor */}
+                                            </mesh>
+                                            {/* Gold Badge */}
+                                            <mesh position={[0, 0.1, 0.53]} rotation={[0.1, 0, 0]}>
+                                                 <cylinderGeometry args={[0.08, 0.08, 0.02, 8]} rotation={[Math.PI/2, 0, 0]} />
+                                                 <meshStandardMaterial color="#FFD700" />
+                                            </mesh>
+                                        </group>
+                                    </group>
+
+                                    {/* Right Arm with Rod */}
+                                    <group position={[0.6, 1.4, 0.2]} rotation={[0.2, 0, -0.2]}>
                                         <mesh geometry={BOSS_ARM} position={[0, -0.4, 0]}>
-                                            <meshStandardMaterial color="#000080" />
+                                            <meshStandardMaterial color="#ffffff" /> {/* White Sleeve */}
                                         </mesh>
                                         <mesh geometry={BOSS_ROD} position={[0, 0.5, 1.5]} rotation={[0.5, 0, 0]}>
                                             <meshStandardMaterial color="#4d2600" />
                                         </mesh>
-                                        <mesh position={[0, 2.8, 2.5]}>
-                                            <boxGeometry args={[0.1, 0.1, 0.1]} />
-                                            <meshStandardMaterial color="#222" />
+                                        {/* Hand */}
+                                        <mesh position={[0, -1.0, 0]}>
+                                            <sphereGeometry args={[0.15]} />
+                                            <meshStandardMaterial color="#ffccaa" />
                                         </mesh>
                                     </group>
-                                    <group position={[-0.6, 1.5, 0.2]} rotation={attackText ? [0, 0, -1.0] : [0.5, 0, 0.2]}>
+
+                                    {/* Left Arm */}
+                                    <group position={[-0.6, 1.4, 0.2]} rotation={attackText ? [0, 0, -1.0] : [0.5, 0, 0.2]}>
                                         <mesh geometry={BOSS_ARM} position={[0, -0.4, 0]}>
-                                            <meshStandardMaterial color="#000080" />
+                                            <meshStandardMaterial color="#ffffff" /> {/* White Sleeve */}
+                                        </mesh>
+                                        {/* Hand */}
+                                        <mesh position={[0, -1.0, 0]}>
+                                            <sphereGeometry args={[0.15]} />
+                                            <meshStandardMaterial color="#ffccaa" />
                                         </mesh>
                                     </group>
                                 </group>
