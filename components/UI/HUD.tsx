@@ -124,13 +124,14 @@ export const HUD: React.FC = () => {
       return (
           <div className="absolute inset-0 flex items-center justify-center z-[100] bg-black/60 backdrop-blur-sm p-4 pointer-events-auto">
               <div className="relative w-full max-w-md rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(0,100,255,0.4)] border border-white/10 animate-in zoom-in-95 duration-500">
-                <div className="relative w-full bg-slate-900 h-[550px] flex flex-col items-center justify-center overflow-hidden">
+                {/* Changed h-[550px] to min-h-[550px] and layout to flex-col justify-between to prevent overlap */}
+                <div className="relative w-full bg-slate-900 min-h-[600px] flex flex-col items-center justify-between overflow-hidden py-8">
                      {/* Dynamic Title Background */}
                      <div className="absolute inset-0 bg-gradient-to-b from-[#002244] via-blue-900/50 to-slate-900"></div>
                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-500/20 via-transparent to-transparent"></div>
                      
-                     {/* Title Text */}
-                     <div className="relative z-20 flex flex-col items-center mb-6 transform -rotate-3 scale-110">
+                     {/* Title Text - Added flex-grow to push content apart */}
+                     <div className="relative z-20 flex flex-col items-center justify-center flex-grow transform -rotate-3 scale-110">
                         <h1 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 font-cyber drop-shadow-[0_5px_5px_rgba(0,0,0,0.5)]">
                             ИЗБЯГАЙ
                         </h1>
@@ -139,7 +140,8 @@ export const HUD: React.FC = () => {
                         </h2>
                      </div>
 
-                     <div className="absolute inset-0 flex flex-col justify-end items-center p-6 pb-8 text-center z-10 gap-3">
+                     {/* Menu Buttons - Removed absolute positioning, now part of flex flow */}
+                     <div className="relative z-20 w-full flex flex-col items-center px-6 gap-3 mt-4">
                         <button 
                           onClick={() => { audio.init(); startGame(); }}
                           className="w-full group relative px-6 py-4 bg-blue-600/80 backdrop-blur-md border border-blue-400/50 text-white font-black text-2xl rounded-xl hover:bg-blue-500 transition-all shadow-lg overflow-hidden"
