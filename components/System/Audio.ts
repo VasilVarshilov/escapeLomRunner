@@ -1,5 +1,4 @@
 
-
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -19,7 +18,7 @@ export class AudioController {
       // Support for standard and webkit prefixed AudioContext
       this.ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
       this.masterGain = this.ctx.createGain();
-      this.masterGain.gain.value = 0.4; // Master volume
+      this.masterGain.gain.value = 0.5; // Slightly increased master volume
       this.masterGain.connect(this.ctx.destination);
     }
     if (this.ctx.state === 'suspended') {
@@ -36,7 +35,6 @@ export class AudioController {
     const gain = this.ctx.createGain();
 
     osc.type = 'sine';
-    // High pitch "ding" with slight upward inflection
     osc.frequency.setValueAtTime(1200, t);
     osc.frequency.exponentialRampToValueAtTime(2000, t + 0.1);
 
@@ -55,8 +53,6 @@ export class AudioController {
     if (!this.ctx || !this.masterGain) return;
 
     const t = this.ctx.currentTime;
-    
-    // Play a major chord (C Majorish: C5, E5, G5) for a rewarding sound
     const freqs = [523.25, 659.25, 783.99]; 
     
     freqs.forEach((f, i) => {
@@ -66,7 +62,6 @@ export class AudioController {
         osc.type = 'triangle';
         osc.frequency.value = f;
         
-        // Stagger start times slightly for an arpeggio feel
         const start = t + (i * 0.04);
         const dur = 0.3;
 
@@ -89,17 +84,13 @@ export class AudioController {
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
 
-    // Sine wave for a smooth "whoop" sound
     osc.type = 'sine';
-    
-    // Pitch shift up for double jump
     const startFreq = isDouble ? 400 : 200;
     const endFreq = isDouble ? 800 : 450;
 
     osc.frequency.setValueAtTime(startFreq, t);
     osc.frequency.exponentialRampToValueAtTime(endFreq, t + 0.15);
 
-    // Lower volume for jump as it is a frequent action
     gain.gain.setValueAtTime(0.2, t);
     gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
 
@@ -116,8 +107,7 @@ export class AudioController {
 
     const t = this.ctx.currentTime;
     
-    // 1. Noise buffer for "crunch/static"
-    const bufferSize = this.ctx.sampleRate * 0.3; // 0.3 seconds
+    const bufferSize = this.ctx.sampleRate * 0.3;
     const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
     const data = buffer.getChannelData(0);
     for (let i = 0; i < bufferSize; i++) {
@@ -127,7 +117,6 @@ export class AudioController {
     const noise = this.ctx.createBufferSource();
     noise.buffer = buffer;
     
-    // 2. Low oscillator for "thud/impact"
     const osc = this.ctx.createOscillator();
     osc.type = 'sawtooth';
     osc.frequency.setValueAtTime(100, t);
@@ -154,6 +143,7 @@ export class AudioController {
   }
 
   playMeow() {
+    // NIKOLAI SOUND
     if (!this.ctx || !this.masterGain) this.init();
     if (!this.ctx || !this.masterGain) return;
 
@@ -161,83 +151,100 @@ export class AudioController {
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
 
-    osc.type = 'triangle';
-    // Meow pitch contour: starts mid, goes up, then down
+    osc.type = 'triangle'; // Softer, cat-like
+    // Classic meow contour: Mid -> High -> Low
     osc.frequency.setValueAtTime(350, t);
-    osc.frequency.linearRampToValueAtTime(550, t + 0.15);
-    osc.frequency.linearRampToValueAtTime(300, t + 0.5);
+    osc.frequency.linearRampToValueAtTime(800, t + 0.2); // Up
+    osc.frequency.linearRampToValueAtTime(300, t + 0.6); // Down
 
     gain.gain.setValueAtTime(0, t);
-    gain.gain.linearRampToValueAtTime(0.7, t + 0.1);
-    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.5);
+    gain.gain.linearRampToValueAtTime(0.8, t + 0.1); // Smooth attack
+    gain.gain.linearRampToValueAtTime(0.4, t + 0.4); 
+    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.6);
 
     osc.connect(gain);
     gain.connect(this.masterGain);
 
     osc.start(t);
-    osc.stop(t + 0.5);
+    osc.stop(t + 0.6);
   }
 
   playBark() {
+    // KALIN SOUND
     if (!this.ctx || !this.masterGain) this.init();
     if (!this.ctx || !this.masterGain) return;
 
     const t = this.ctx.currentTime;
-    const osc = this.ctx.createOscillator();
+    
+    // Mix Sawtooth and Square for a rough "throat" sound
+    const osc1 = this.ctx.createOscillator();
+    const osc2 = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
 
-    osc.type = 'sawtooth'; 
-    // Bark pitch contour: sharp drop, lower pitch for a bigger dog sound
-    osc.frequency.setValueAtTime(220, t);
-    osc.frequency.exponentialRampToValueAtTime(80, t + 0.3);
+    osc1.type = 'sawtooth';
+    osc2.type = 'square'; 
 
-    // Louder envelope
+    // Bark pitch drop (Sharp "WOOF")
+    osc1.frequency.setValueAtTime(350, t);
+    osc1.frequency.exponentialRampToValueAtTime(60, t + 0.15);
+    
+    osc2.frequency.setValueAtTime(300, t);
+    osc2.frequency.exponentialRampToValueAtTime(50, t + 0.15);
+
+    // Hard attack, very fast decay
     gain.gain.setValueAtTime(0, t);
-    gain.gain.linearRampToValueAtTime(0.9, t + 0.05); // Strong attack
-    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.35); // Longer decay
+    gain.gain.linearRampToValueAtTime(1.5, t + 0.02); // Very loud attack
+    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.25);
 
-    osc.connect(gain);
+    osc1.connect(gain);
+    osc2.connect(gain);
     gain.connect(this.masterGain);
 
-    osc.start(t);
-    osc.stop(t + 0.35);
+    osc1.start(t);
+    osc2.start(t);
+    osc1.stop(t + 0.25);
+    osc2.stop(t + 0.25);
   }
 
   playHorse() {
+    // STILYAN SOUND
     if (!this.ctx || !this.masterGain) this.init();
     if (!this.ctx || !this.masterGain) return;
 
     const t = this.ctx.currentTime;
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
-    const lfo = this.ctx.createOscillator(); // Low Frequency Oscillator for vibrato
+    const lfo = this.ctx.createOscillator(); // Vibrato source
 
-    osc.type = 'sawtooth';
+    osc.type = 'sawtooth'; // Harsh tone
     lfo.type = 'sine';
-    lfo.frequency.value = 12; // Vibrato speed
+    
+    // High pitched whinny dropping down
+    osc.frequency.setValueAtTime(1400, t);
+    osc.frequency.linearRampToValueAtTime(700, t + 0.4);
+    osc.frequency.linearRampToValueAtTime(300, t + 0.9);
 
-    // Base pitch starts high and drops (neigh)
-    osc.frequency.setValueAtTime(800, t);
-    osc.frequency.exponentialRampToValueAtTime(400, t + 0.3);
-    osc.frequency.linearRampToValueAtTime(200, t + 0.7);
+    // Intense vibrato
+    lfo.frequency.setValueAtTime(15, t); // Fast shake
+    lfo.frequency.linearRampToValueAtTime(10, t + 0.9);
 
-    // LFO connection for vibrato
     const lfoGain = this.ctx.createGain();
-    lfoGain.gain.value = 80; 
+    lfoGain.gain.value = 150; // Pitch modulation depth
+    
     lfo.connect(lfoGain);
     lfoGain.connect(osc.frequency);
 
     gain.gain.setValueAtTime(0, t);
-    gain.gain.linearRampToValueAtTime(0.6, t + 0.1);
-    gain.gain.linearRampToValueAtTime(0.01, t + 0.7);
+    gain.gain.linearRampToValueAtTime(0.7, t + 0.1);
+    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.9);
 
     osc.connect(gain);
     gain.connect(this.masterGain);
 
     osc.start(t);
     lfo.start(t);
-    osc.stop(t + 0.7);
-    lfo.stop(t + 0.7);
+    osc.stop(t + 0.9);
+    lfo.stop(t + 0.9);
   }
 }
 
