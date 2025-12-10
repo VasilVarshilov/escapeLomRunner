@@ -1,3 +1,4 @@
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -149,6 +150,92 @@ export class AudioController {
     osc.stop(t + 0.3);
     noise.start(t);
     noise.stop(t + 0.3);
+  }
+
+  playMeow() {
+    if (!this.ctx || !this.masterGain) this.init();
+    if (!this.ctx || !this.masterGain) return;
+
+    const t = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = 'triangle';
+    // Meow pitch contour: starts mid, goes up, then down
+    osc.frequency.setValueAtTime(400, t);
+    osc.frequency.linearRampToValueAtTime(600, t + 0.1);
+    osc.frequency.linearRampToValueAtTime(300, t + 0.4);
+
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(0.5, t + 0.1);
+    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
+
+    osc.connect(gain);
+    gain.connect(this.masterGain);
+
+    osc.start(t);
+    osc.stop(t + 0.4);
+  }
+
+  playBark() {
+    if (!this.ctx || !this.masterGain) this.init();
+    if (!this.ctx || !this.masterGain) return;
+
+    const t = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = 'sawtooth'; // More aggressive wave for bark
+    // Bark pitch contour: sharp drop
+    osc.frequency.setValueAtTime(300, t);
+    osc.frequency.exponentialRampToValueAtTime(100, t + 0.15);
+
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(0.6, t + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
+
+    osc.connect(gain);
+    gain.connect(this.masterGain);
+
+    osc.start(t);
+    osc.stop(t + 0.2);
+  }
+
+  playHorse() {
+    if (!this.ctx || !this.masterGain) this.init();
+    if (!this.ctx || !this.masterGain) return;
+
+    const t = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    const lfo = this.ctx.createOscillator(); // Low Frequency Oscillator for vibrato
+
+    osc.type = 'sawtooth';
+    lfo.type = 'sine';
+    lfo.frequency.value = 15; // Fast shake
+
+    // Base pitch starts high and drops (neigh)
+    osc.frequency.setValueAtTime(800, t);
+    osc.frequency.exponentialRampToValueAtTime(400, t + 0.3);
+    osc.frequency.linearRampToValueAtTime(200, t + 0.6);
+
+    // LFO connection for vibrato
+    const lfoGain = this.ctx.createGain();
+    lfoGain.gain.value = 50; 
+    lfo.connect(lfoGain);
+    lfoGain.connect(osc.frequency);
+
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(0.4, t + 0.1);
+    gain.gain.linearRampToValueAtTime(0.01, t + 0.6);
+
+    osc.connect(gain);
+    gain.connect(this.masterGain);
+
+    osc.start(t);
+    lfo.start(t);
+    osc.stop(t + 0.6);
+    lfo.stop(t + 0.6);
   }
 }
 
