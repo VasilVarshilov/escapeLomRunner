@@ -572,7 +572,11 @@ export const LevelManager: React.FC = () => {
     const isMenuReset = status === GameStatus.MENU;
     const isLevelUp = level !== prevLevel.current && status === GameStatus.PLAYING;
     const isVictoryReset = status === GameStatus.PLAYING && prevStatus.current === GameStatus.VICTORY;
-    const isBossStart = status === GameStatus.BOSS_FIGHT && prevStatus.current === GameStatus.PLAYING;
+    
+    // Fix: Transition to BOSS_FIGHT logic should check if we are ENTERING the boss fight from ANY other state (Menu, GameOver, Playing)
+    // Previous logic (prevStatus === PLAYING) failed when continuing from Menu or retrying after Game Over.
+    const isBossStart = status === GameStatus.BOSS_FIGHT && prevStatus.current !== GameStatus.BOSS_FIGHT;
+    
     const isBossDefeated = prevStatus.current === GameStatus.BOSS_FIGHT && status === GameStatus.PLAYING;
 
     if (isMenuReset || isRestart || isVictoryReset) {
