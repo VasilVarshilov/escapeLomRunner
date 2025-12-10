@@ -1,4 +1,5 @@
 
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -162,19 +163,19 @@ export class AudioController {
 
     osc.type = 'triangle';
     // Meow pitch contour: starts mid, goes up, then down
-    osc.frequency.setValueAtTime(400, t);
-    osc.frequency.linearRampToValueAtTime(600, t + 0.1);
-    osc.frequency.linearRampToValueAtTime(300, t + 0.4);
+    osc.frequency.setValueAtTime(350, t);
+    osc.frequency.linearRampToValueAtTime(550, t + 0.15);
+    osc.frequency.linearRampToValueAtTime(300, t + 0.5);
 
     gain.gain.setValueAtTime(0, t);
-    gain.gain.linearRampToValueAtTime(0.5, t + 0.1);
-    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
+    gain.gain.linearRampToValueAtTime(0.7, t + 0.1);
+    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.5);
 
     osc.connect(gain);
     gain.connect(this.masterGain);
 
     osc.start(t);
-    osc.stop(t + 0.4);
+    osc.stop(t + 0.5);
   }
 
   playBark() {
@@ -185,20 +186,21 @@ export class AudioController {
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
 
-    osc.type = 'sawtooth'; // More aggressive wave for bark
-    // Bark pitch contour: sharp drop
-    osc.frequency.setValueAtTime(300, t);
-    osc.frequency.exponentialRampToValueAtTime(100, t + 0.15);
+    osc.type = 'sawtooth'; 
+    // Bark pitch contour: sharp drop, lower pitch for a bigger dog sound
+    osc.frequency.setValueAtTime(220, t);
+    osc.frequency.exponentialRampToValueAtTime(80, t + 0.3);
 
+    // Louder envelope
     gain.gain.setValueAtTime(0, t);
-    gain.gain.linearRampToValueAtTime(0.6, t + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
+    gain.gain.linearRampToValueAtTime(0.9, t + 0.05); // Strong attack
+    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.35); // Longer decay
 
     osc.connect(gain);
     gain.connect(this.masterGain);
 
     osc.start(t);
-    osc.stop(t + 0.2);
+    osc.stop(t + 0.35);
   }
 
   playHorse() {
@@ -212,30 +214,30 @@ export class AudioController {
 
     osc.type = 'sawtooth';
     lfo.type = 'sine';
-    lfo.frequency.value = 15; // Fast shake
+    lfo.frequency.value = 12; // Vibrato speed
 
     // Base pitch starts high and drops (neigh)
     osc.frequency.setValueAtTime(800, t);
     osc.frequency.exponentialRampToValueAtTime(400, t + 0.3);
-    osc.frequency.linearRampToValueAtTime(200, t + 0.6);
+    osc.frequency.linearRampToValueAtTime(200, t + 0.7);
 
     // LFO connection for vibrato
     const lfoGain = this.ctx.createGain();
-    lfoGain.gain.value = 50; 
+    lfoGain.gain.value = 80; 
     lfo.connect(lfoGain);
     lfoGain.connect(osc.frequency);
 
     gain.gain.setValueAtTime(0, t);
-    gain.gain.linearRampToValueAtTime(0.4, t + 0.1);
-    gain.gain.linearRampToValueAtTime(0.01, t + 0.6);
+    gain.gain.linearRampToValueAtTime(0.6, t + 0.1);
+    gain.gain.linearRampToValueAtTime(0.01, t + 0.7);
 
     osc.connect(gain);
     gain.connect(this.masterGain);
 
     osc.start(t);
     lfo.start(t);
-    osc.stop(t + 0.6);
-    lfo.stop(t + 0.6);
+    osc.stop(t + 0.7);
+    lfo.stop(t + 0.7);
   }
 }
 
