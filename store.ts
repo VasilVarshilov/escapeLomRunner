@@ -152,27 +152,63 @@ export const useStore = create<GameState>((set, get) => ({
       const { lastPlayedLevel } = get();
       const startLevel = lastPlayedLevel > 1 ? lastPlayedLevel : 1;
       
-      set({ 
-        status: GameStatus.PLAYING, 
-        score: 0, 
-        lives: 3,
-        maxLives: 3,
-        speed: RUN_SPEED_BASE,
-        collectedLetters: [],
-        targetWord: getRandomWord(),
-        level: startLevel,
-        laneCount: 3,
-        gemsCollected: 0,
-        distance: 0,
-        hasDoubleJump: false,
-        hasImmortality: false,
-        isImmortalityActive: false,
-        immortalityUsedOnLevel: -1,
-        bossHp: 100,
-        maxBossHp: 100,
-        bossType: 'NONE',
-        newRecordSet: false 
-      });
+      // Determine if the saved level is a boss level
+      if (startLevel % 3 === 0) {
+          const encounterIndex = startLevel / 3;
+          // Rotation: 1 -> Kalin, 2 -> Stilyan, 3 -> Nikolai
+          const cycle = encounterIndex % 3; 
+          
+          let bossType: BossType = 'KALIN'; 
+          if (cycle === 2) bossType = 'STILYAN';
+          if (cycle === 0) bossType = 'NIKOLAI';
+          
+          const bossHealth = (500 + (startLevel * 50)) * 2;
+          
+          set({
+              status: GameStatus.BOSS_FIGHT,
+              score: 0,
+              lives: 3,
+              maxLives: 3,
+              speed: RUN_SPEED_BASE,
+              collectedLetters: [],
+              targetWord: [], // No word in boss fight
+              level: startLevel,
+              laneCount: 3,
+              gemsCollected: 0,
+              distance: 0,
+              hasDoubleJump: false,
+              hasImmortality: false,
+              isImmortalityActive: false,
+              immortalityUsedOnLevel: -1,
+              bossHp: bossHealth,
+              maxBossHp: bossHealth,
+              bossType: bossType,
+              newRecordSet: false
+          });
+      } else {
+          // Standard Level
+          set({ 
+            status: GameStatus.PLAYING, 
+            score: 0, 
+            lives: 3,
+            maxLives: 3,
+            speed: RUN_SPEED_BASE,
+            collectedLetters: [],
+            targetWord: getRandomWord(),
+            level: startLevel,
+            laneCount: 3,
+            gemsCollected: 0,
+            distance: 0,
+            hasDoubleJump: false,
+            hasImmortality: false,
+            isImmortalityActive: false,
+            immortalityUsedOnLevel: -1,
+            bossHp: 100,
+            maxBossHp: 100,
+            bossType: 'NONE',
+            newRecordSet: false 
+          });
+      }
   },
 
   restartGame: () => set({ 
