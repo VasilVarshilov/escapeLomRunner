@@ -1,3 +1,4 @@
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -8,8 +9,11 @@ export enum GameStatus {
   PLAYING = 'PLAYING',
   SHOP = 'SHOP',
   GAME_OVER = 'GAME_OVER',
-  VICTORY = 'VICTORY'
+  VICTORY = 'VICTORY',
+  BOSS_FIGHT = 'BOSS_FIGHT'
 }
+
+export type BossType = 'NONE' | 'NIKOLAI' | 'KALIN' | 'STILYAN';
 
 export enum ObjectType {
   OBSTACLE = 'OBSTACLE', // Represents Zombies
@@ -17,13 +21,19 @@ export enum ObjectType {
   LETTER = 'LETTER',
   SHOP_PORTAL = 'SHOP_PORTAL',
   ALIEN = 'ALIEN', // Represents "Special" Zombies
-  MISSILE = 'MISSILE', // Represents Bottles
+  MISSILE = 'MISSILE', // Represents Bottles (Enemy or Player)
   BARREL = 'BARREL', // Rolling wine barrel
   ZIGZAG_CRATE = 'ZIGZAG_CRATE', // Beer crate moving diagonal/zig-zag
   CAT = 'CAT', // Black cat crossing the road
   POTHOLE = 'POTHOLE', // Hole in the road
   OLD_CAR = 'OLD_CAR', // Rusty vehicle
-  HAY_BALE = 'HAY_BALE' // Farm obstacle
+  HAY_BALE = 'HAY_BALE', // Farm obstacle
+  ROLLING_TIRE = 'ROLLING_TIRE', // New: Rolling Tire
+  
+  // Boss Specific
+  BOSS = 'BOSS',
+  BOSS_PROJECTILE = 'BOSS_PROJECTILE',
+  PLAYER_PROJECTILE = 'PLAYER_PROJECTILE'
 }
 
 export interface GameObject {
@@ -42,6 +52,16 @@ export interface GameObject {
   initialX?: number; // Reference for ZigZag calculations
   speedZ?: number; // Custom forward speed
   zigzagPhase?: number; // Random offset for sine wave
+  
+  // Physics
+  velocity?: [number, number, number];
+  
+  // Boss Specific
+  hp?: number;
+  maxHp?: number;
+  phase?: 'intro' | 'fight';
+  bossType?: BossType; // To distinguish visual model
+  projectileVariant?: 'bottle' | 'steak' | 'potato' | 'tire'; // For projectile visuals
 }
 
 export const LANE_WIDTH = 2.2;
@@ -69,4 +89,11 @@ export interface ShopItem {
     cost: number;
     icon: any; // Lucide icon component
     oneTime?: boolean; // If true, remove from pool after buying
+}
+
+export interface HighScores {
+    maxScore: number;
+    maxDistance: number;
+    maxLevel: number;
+    maxGems: number;
 }
