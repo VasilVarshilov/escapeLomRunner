@@ -1,3 +1,4 @@
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -5,7 +6,7 @@
 
 
 import React, { useState, useEffect } from 'react';
-import { Heart, Zap, Trophy, MapPin, Fish, Rocket, ArrowUpCircle, Shield, Activity, PlusCircle, Play, Beer } from 'lucide-react';
+import { Heart, Zap, Trophy, MapPin, Fish, Rocket, ArrowUpCircle, Shield, Activity, PlusCircle, Play, Beer, Medal, XCircle, RotateCcw } from 'lucide-react';
 import { useStore } from '../../store';
 import { GameStatus, LETTER_COLORS, ShopItem, RUN_SPEED_BASE } from '../../types';
 import { audio } from '../System/Audio';
@@ -22,7 +23,7 @@ const SHOP_ITEMS: ShopItem[] = [
     },
     {
         id: 'MAX_LIFE',
-        name: 'ОЩЕ ЖИВОТ',
+        name: 'НОВ ЖИВОТ',
         description: 'Почивка в къща за гости "Ненийски". Увеличаваш живота си трайно.',
         cost: 1500,
         icon: Activity
@@ -37,10 +38,10 @@ const SHOP_ITEMS: ShopItem[] = [
     {
         id: 'IMMORTAL',
         name: 'БЕЗСМЪРТИЕ',
-        description: 'Вечеряш в бистро "Рибката" и ставаш безсмъртен за 25 секунди с Space/Tap.',
+        description: 'Вечеряш в бистро "Рибката". Ставаш безсмъртен (Space/Tap). Веднъж на ниво!',
         cost: 3000,
         icon: Shield,
-        oneTime: true
+        oneTime: true // One time purchase, but skill is permanent
     }
 ];
 
@@ -107,7 +108,8 @@ const ShopScreen: React.FC = () => {
 };
 
 export const HUD: React.FC = () => {
-  const { score, lives, maxLives, collectedLetters, status, level, restartGame, startGame, gemsCollected, distance, isImmortalityActive, speed, targetWord } = useStore();
+  const { score, lives, maxLives, collectedLetters, status, level, restartGame, startGame, continueGame, lastPlayedLevel, gemsCollected, distance, isImmortalityActive, speed, targetWord, bossHp, maxBossHp, bossType, highScores, newRecordSet } = useStore();
+  const [showRecords, setShowRecords] = useState(false);
   
   // Adjusted padding since bottom element is gone
   const containerClass = "absolute inset-0 pointer-events-none flex flex-col justify-between p-4 md:p-8 z-50";
@@ -116,17 +118,18 @@ export const HUD: React.FC = () => {
       return <ShopScreen />;
   }
 
+  // MAIN MENU
   if (status === GameStatus.MENU) {
       return (
           <div className="absolute inset-0 flex items-center justify-center z-[100] bg-black/60 backdrop-blur-sm p-4 pointer-events-auto">
               <div className="relative w-full max-w-md rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(0,100,255,0.4)] border border-white/10 animate-in zoom-in-95 duration-500">
-                <div className="relative w-full bg-slate-900 h-96 flex flex-col items-center justify-center overflow-hidden">
+                <div className="relative w-full bg-slate-900 h-[550px] flex flex-col items-center justify-center overflow-hidden">
                      {/* Dynamic Title Background */}
                      <div className="absolute inset-0 bg-gradient-to-b from-[#002244] via-blue-900/50 to-slate-900"></div>
                      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-500/20 via-transparent to-transparent"></div>
                      
                      {/* Title Text */}
-                     <div className="relative z-20 flex flex-col items-center mb-10 transform -rotate-3 scale-110">
+                     <div className="relative z-20 flex flex-col items-center mb-6 transform -rotate-3 scale-110">
                         <h1 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 font-cyber drop-shadow-[0_5px_5px_rgba(0,0,0,0.5)]">
                             ИЗБЯГАЙ
                         </h1>
@@ -135,7 +138,7 @@ export const HUD: React.FC = () => {
                         </h2>
                      </div>
 
-                     <div className="absolute inset-0 flex flex-col justify-end items-center p-6 pb-8 text-center z-10">
+                     <div className="absolute inset-0 flex flex-col justify-end items-center p-6 pb-8 text-center z-10 gap-3">
                         <button 
                           onClick={() => { audio.init(); startGame(); }}
                           className="w-full group relative px-6 py-4 bg-blue-600/80 backdrop-blur-md border border-blue-400/50 text-white font-black text-2xl rounded-xl hover:bg-blue-500 transition-all shadow-lg overflow-hidden"
@@ -145,22 +148,83 @@ export const HUD: React.FC = () => {
                             </span>
                         </button>
 
-                        <p className="text-blue-200/80 text-[10px] md:text-xs font-mono mt-3 tracking-wider">
+                        {/* CONTINUE BUTTON (Only if saved level > 1) */}
+                        {lastPlayedLevel > 1 && (
+                            <button 
+                              onClick={() => { audio.init(); continueGame(); }}
+                              className="w-full relative px-6 py-3 bg-emerald-600/80 backdrop-blur-md border border-emerald-400/50 text-white font-black text-xl rounded-xl hover:bg-emerald-500 transition-all shadow-lg uppercase flex items-center justify-center"
+                            >
+                                <span className="mr-2">Бега пак де</span>
+                                <span className="text-sm bg-black/30 px-2 py-0.5 rounded ml-2">НИВО {lastPlayedLevel}</span>
+                                <RotateCcw className="ml-2 w-5 h-5" />
+                            </button>
+                        )}
+
+                        <button 
+                          onClick={() => setShowRecords(true)}
+                          className="w-full relative px-6 py-3 bg-yellow-600/80 backdrop-blur-md border border-yellow-400/50 text-white font-black text-xl rounded-xl hover:bg-yellow-500 transition-all shadow-lg uppercase flex items-center justify-center"
+                        >
+                            Лични Рекорди <Medal className="ml-2 w-5 h-5" />
+                        </button>
+
+                        <p className="text-blue-200/80 text-[10px] md:text-xs font-mono mt-1 tracking-wider">
                             [ СТРЕЛКИ / SWIPE ЗА ДА МЪРДАШ ]
                         </p>
                      </div>
                 </div>
               </div>
+
+              {/* RECORDS MODAL */}
+              {showRecords && (
+                  <div className="absolute inset-0 flex items-center justify-center z-[110] bg-black/80 backdrop-blur-md p-4">
+                      <div className="bg-slate-900 border border-yellow-500/50 rounded-2xl p-6 w-full max-w-sm relative shadow-[0_0_40px_rgba(255,200,0,0.2)]">
+                          <button onClick={() => setShowRecords(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white">
+                              <XCircle className="w-8 h-8" />
+                          </button>
+                          
+                          <h3 className="text-2xl font-black text-yellow-400 mb-6 text-center uppercase tracking-wider font-cyber">Твоите Постижения</h3>
+                          
+                          <div className="space-y-4">
+                              <div className="flex justify-between items-center border-b border-gray-700 pb-2">
+                                  <span className="text-gray-400 font-mono">РЕЗУЛТАТ</span>
+                                  <span className="text-2xl font-bold text-white">{highScores.maxScore.toLocaleString()}</span>
+                              </div>
+                              <div className="flex justify-between items-center border-b border-gray-700 pb-2">
+                                  <span className="text-gray-400 font-mono">РАЗСТОЯНИЕ</span>
+                                  <span className="text-2xl font-bold text-blue-300">{highScores.maxDistance} м</span>
+                              </div>
+                              <div className="flex justify-between items-center border-b border-gray-700 pb-2">
+                                  <span className="text-gray-400 font-mono">НИВО</span>
+                                  <span className="text-2xl font-bold text-green-300">{highScores.maxLevel}</span>
+                              </div>
+                              <div className="flex justify-between items-center border-b border-gray-700 pb-2">
+                                  <span className="text-gray-400 font-mono">РИБИ</span>
+                                  <span className="text-2xl font-bold text-yellow-300">{highScores.maxGems}</span>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              )}
           </div>
       );
   }
 
+  // GAME OVER
   if (status === GameStatus.GAME_OVER) {
       return (
           <div className="absolute inset-0 bg-red-900/90 z-[100] text-white pointer-events-auto backdrop-blur-sm overflow-y-auto">
               <div className="flex flex-col items-center justify-center min-h-full py-8 px-4">
                 <h1 className="text-4xl md:text-6xl font-black text-white mb-6 drop-shadow-[0_0_10px_rgba(0,0,0,0.8)] font-cyber text-center uppercase">Ти си Жмульо</h1>
                 
+                {/* NEW RECORD MESSAGE */}
+                {newRecordSet && (
+                    <div className="mb-6 px-4 py-2 bg-yellow-500/20 border border-yellow-400 rounded-lg animate-bounce">
+                        <p className="text-yellow-300 text-lg md:text-2xl font-black font-cyber text-center uppercase drop-shadow-md">
+                            Браво бе, Пустиняк! Нов рекорд!
+                        </p>
+                    </div>
+                )}
+
                 <div className="grid grid-cols-1 gap-3 md:gap-4 text-center mb-8 w-full max-w-md">
                     <div className="bg-slate-800/80 p-3 md:p-4 rounded-lg border border-slate-600 flex items-center justify-between">
                         <div className="flex items-center text-yellow-400 text-sm md:text-base"><Trophy className="mr-2 w-4 h-4 md:w-5 md:h-5"/> НИВО</div>
@@ -193,18 +257,12 @@ export const HUD: React.FC = () => {
 
   if (status === GameStatus.VICTORY) {
     return (
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-600/90 to-blue-900/95 z-[100] text-white pointer-events-auto backdrop-blur-md overflow-y-auto">
-            <div className="flex flex-col items-center justify-center min-h-full py-8 px-4">
-                <Rocket className="w-16 h-16 md:w-24 md:h-24 text-yellow-400 mb-4 animate-bounce drop-shadow-[0_0_15px_rgba(255,215,0,0.6)]" />
-                <h1 className="text-3xl md:text-6xl font-black text-white mb-2 drop-shadow-lg font-cyber text-center leading-tight uppercase">
-                    Поздравления, ти избега от Лом
-                </h1>
-                <p className="text-blue-200 text-sm md:text-2xl font-mono mb-8 tracking-widest text-center uppercase">
-                    Евала!
-                </p>
+        <div className="absolute inset-0 bg-transparent z-[100] text-white pointer-events-auto overflow-y-auto">
+            <div className="flex flex-col items-center justify-end min-h-full py-8 px-4 pb-20">
                 
-                <div className="grid grid-cols-1 gap-4 text-center mb-8 w-full max-w-md">
-                    <div className="bg-blue-900/60 p-6 rounded-xl border border-blue-400/30">
+                {/* Minimal Overlay for Score/Restart so 3D scene is visible */}
+                <div className="grid grid-cols-1 gap-2 text-center mb-4 w-full max-w-sm">
+                    <div className="bg-black/60 p-4 rounded-xl border border-blue-400/30 backdrop-blur-sm">
                         <div className="text-xs md:text-sm text-gray-300 mb-1 tracking-wider">КРАЕН РЕЗУЛТАТ</div>
                         <div className="text-3xl md:text-4xl font-bold font-cyber text-yellow-400">{score.toLocaleString()}</div>
                     </div>
@@ -278,6 +336,29 @@ export const HUD: React.FC = () => {
             НИВО {level}
         </div>
 
+        {/* BOSS HEALTH BAR */}
+        {status === GameStatus.BOSS_FIGHT && (
+            <div className="absolute top-16 left-1/2 transform -translate-x-1/2 w-full max-w-md px-4 z-50">
+                <div className="flex justify-between text-white font-black font-cyber mb-1 text-shadow-sm uppercase">
+                    <span>
+                        {bossType === 'KALIN' ? 'КАЛИН (ГРИЗАЧА)' : 
+                         bossType === 'STILYAN' ? 'СТИЛЯН (КОБРАТА)' : 
+                         'НИКОЛАЙ (БОС)'}
+                    </span>
+                    <span>{Math.ceil((bossHp / maxBossHp) * 100)}%</span>
+                </div>
+                <div className="w-full h-4 md:h-6 bg-slate-900/80 border border-red-500/50 rounded-full overflow-hidden">
+                    <div 
+                        className="h-full bg-gradient-to-r from-red-600 to-orange-600 transition-all duration-300"
+                        style={{ width: `${(bossHp / maxBossHp) * 100}%` }}
+                    />
+                </div>
+                <div className="text-center text-yellow-300 text-xs mt-1 animate-pulse font-mono">
+                    [SPACE/TAP] ЗА ДА ХВЪРЛЯШ БИРИ
+                </div>
+            </div>
+        )}
+
         {/* Active Skill Indicator - Moved Down to top-48 */}
         {isImmortalityActive && (
              <div className="absolute top-48 left-1/2 transform -translate-x-1/2 text-yellow-300 font-bold text-xl md:text-2xl animate-pulse flex items-center drop-shadow-md z-40 whitespace-nowrap">
@@ -285,31 +366,31 @@ export const HUD: React.FC = () => {
              </div>
         )}
 
-        {/* Word Collection Status */}
-        {/* Force single line (flex-nowrap) and use adaptive gaps */}
-        {/* Adjusted top position to be higher on mobile (top-24) to avoid overlap with Beer counter */}
-        <div className={`absolute top-24 md:top-32 left-1/2 transform -translate-x-1/2 flex flex-nowrap justify-center ${gapClass} max-w-full px-1 z-40`}>
-            {targetWord.map((char, idx) => {
-                const isCollected = collectedLetters.includes(idx);
-                // Cycle through colors
-                const color = LETTER_COLORS[idx % LETTER_COLORS.length];
+        {/* Word Collection Status (Hidden during Boss Fight) */}
+        {status !== GameStatus.BOSS_FIGHT && (
+            <div className={`absolute top-24 md:top-32 left-1/2 transform -translate-x-1/2 flex flex-nowrap justify-center ${gapClass} max-w-full px-1 z-40`}>
+                {targetWord.map((char, idx) => {
+                    const isCollected = collectedLetters.includes(idx);
+                    // Cycle through colors
+                    const color = LETTER_COLORS[idx % LETTER_COLORS.length];
 
-                return (
-                    <div 
-                        key={idx}
-                        style={{
-                            borderColor: isCollected ? color : 'rgba(255, 255, 255, 0.3)',
-                            color: isCollected ? 'black' : 'rgba(255, 255, 255, 0.5)',
-                            backgroundColor: isCollected ? color : 'rgba(0, 0, 0, 0.5)',
-                            boxShadow: isCollected ? `0 0 10px ${color}` : 'none',
-                        }}
-                        className={`${boxClass} flex items-center justify-center font-black font-cyber rounded-md transform transition-all duration-300`}
-                    >
-                        {char}
-                    </div>
-                );
-            })}
-        </div>
+                    return (
+                        <div 
+                            key={idx}
+                            style={{
+                                borderColor: isCollected ? color : 'rgba(255, 255, 255, 0.3)',
+                                color: isCollected ? 'black' : 'rgba(255, 255, 255, 0.5)',
+                                backgroundColor: isCollected ? color : 'rgba(0, 0, 0, 0.5)',
+                                boxShadow: isCollected ? `0 0 10px ${color}` : 'none',
+                            }}
+                            className={`${boxClass} flex items-center justify-center font-black font-cyber rounded-md transform transition-all duration-300`}
+                        >
+                            {char}
+                        </div>
+                    );
+                })}
+            </div>
+        )}
 
         {/* Empty Bottom Div to maintain flex spacing if needed, though 'justify-between' handles it */}
         <div></div>
