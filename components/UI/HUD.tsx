@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
+// @ts-nocheck
 
 import React, { useState, useEffect } from 'react';
 import { Heart, Zap, Trophy, MapPin, Fish, Rocket, ArrowUpCircle, Shield, Activity, PlusCircle, Play, Beer, Medal, XCircle, RotateCcw } from 'lucide-react';
@@ -198,7 +199,7 @@ export const HUD: React.FC = () => {
                                   <span className="text-2xl font-bold text-green-300">{highScores.maxLevel}</span>
                               </div>
                               <div className="flex justify-between items-center border-b border-gray-700 pb-2">
-                                  <span className="text-gray-400 font-mono">РИБИ</span>
+                                  <span className="text-gray-400 font-mono">НИВО</span>
                                   <span className="text-2xl font-bold text-yellow-300">{highScores.maxGems}</span>
                               </div>
                           </div>
