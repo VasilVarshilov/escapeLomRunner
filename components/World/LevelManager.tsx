@@ -724,7 +724,7 @@ export const LevelManager: React.FC = () => {
                 newSpawns.push({
                     id: uuidv4(),
                     type: ObjectType.BOSS_PROJECTILE,
-                    position: [boss.position[0], 2, boss.position[2] + 2],
+                    position: [boss.position[0], 1.1, boss.position[2] + 2],
                     active: true,
                     bossType: boss.bossType,
                     projectileVariant: variant as any,
@@ -859,11 +859,15 @@ export const LevelManager: React.FC = () => {
             else if (obj.type === ObjectType.BOSS_PROJECTILE) {
                 // Check distance
                 const dx = Math.abs(obj.position[0] - playerPos.x);
-                const dy = Math.abs(obj.position[1] - playerPos.y); 
                 const dz = Math.abs(obj.position[2] - playerPos.z);
                 
-                // Generous hit box for the player
-                if (dz < 1.5 && dx < 1.0 && dy < 2.0) {
+                // Vertical Collision Logic for Jumpability
+                // Projectile is roughly centered at its Y. Let's assume height is ~1 unit.
+                const projectileTop = obj.position[1] + 0.6; 
+                const playerFeet = playerPos.y;
+
+                // Hit if player feet are BELOW projectile top AND horizontal/depth align
+                if (dz < 1.5 && dx < 1.0 && playerFeet < projectileTop) {
                     window.dispatchEvent(new Event('player-hit'));
                     obj.active = false;
                     keep = false;
