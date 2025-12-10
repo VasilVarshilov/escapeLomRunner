@@ -840,7 +840,7 @@ export const LevelManager: React.FC = () => {
                  if (boss && boss.active) {
                      const dx = Math.abs(obj.position[0] - boss.position[0]);
                      const dz = Math.abs(obj.position[2] - boss.position[2]);
-                     if (dx < 5.0 && dz < 5.0) { // Hit box size
+                     if (dx < 1.5 && dz < 3.0) { // Tightened hitbox
                          // Hit!
                          damageBoss(25); // Damage amount
                          obj.active = false;
