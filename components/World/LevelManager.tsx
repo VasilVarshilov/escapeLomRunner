@@ -587,9 +587,6 @@ export const LevelManager: React.FC = () => {
         nextLetterDistance.current = getLetterInterval(); // Random constant 100-250
         speedTimer.current = 0;
         
-        // Ensure boss audio is stopped
-        audio.stopBossAmbience();
-
     } else if (isLevelUp && level > 1) {
         objectsRef.current = objectsRef.current.filter(obj => obj.position[2] > -80);
 
@@ -621,9 +618,6 @@ export const LevelManager: React.FC = () => {
         setRenderTrigger(t => t + 1);
         bossTimer.current = 0;
         
-        // START LOOPED AUDIO
-        audio.startBossAmbience(bossType);
-
     } else if (isBossDefeated) {
         // Clear Boss absolutely
         objectsRef.current = objectsRef.current.filter(o => o.type !== ObjectType.BOSS && o.type !== ObjectType.BOSS_PROJECTILE);
@@ -631,15 +625,11 @@ export const LevelManager: React.FC = () => {
         // Continue spawning normal obstacles
         nextLetterDistance.current = distanceTraveled.current + 50;
         
-        // STOP AUDIO
-        audio.stopBossAmbience();
     } else if (status === GameStatus.GAME_OVER || status === GameStatus.VICTORY) {
         const finalDist = Math.floor(distanceTraveled.current);
         setDistance(finalDist);
         checkHighScores(finalDist); // Trigger high score check with correct distance
         
-        // STOP AUDIO
-        audio.stopBossAmbience();
     }
     
     prevStatus.current = status;
