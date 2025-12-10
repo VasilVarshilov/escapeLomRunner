@@ -247,12 +247,21 @@ export const HUD: React.FC = () => {
                     </div>
                 </div>
 
-                <button 
-                  onClick={() => { audio.init(); restartGame(); }}
-                  className="px-8 md:px-10 py-3 md:py-4 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold text-lg md:text-xl rounded hover:scale-105 transition-all shadow-lg uppercase"
-                >
-                    Бега пак
-                </button>
+                <div className="flex flex-col gap-3 w-full max-w-md items-center">
+                    <button 
+                      onClick={() => { audio.init(); continueGame(); }}
+                      className="w-full px-8 py-3 md:py-4 bg-gradient-to-r from-emerald-600 to-green-500 text-white font-bold text-lg md:text-xl rounded hover:scale-105 transition-all shadow-lg uppercase flex items-center justify-center"
+                    >
+                        Бега пак де <RotateCcw className="ml-2 w-5 h-5" />
+                    </button>
+
+                    <button 
+                      onClick={() => { audio.init(); restartGame(); }}
+                      className="w-full px-8 py-3 md:py-4 bg-gradient-to-r from-blue-600 to-cyan-500 text-white font-bold text-lg md:text-xl rounded hover:scale-105 transition-all shadow-lg uppercase"
+                    >
+                        Пустиняк, дай отначало
+                    </button>
+                </div>
               </div>
           </div>
       );
