@@ -19,7 +19,7 @@ export class AudioController {
       // Support for standard and webkit prefixed AudioContext
       this.ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
       this.masterGain = this.ctx.createGain();
-      this.masterGain.gain.value = 0.7; // Loud master volume
+      this.masterGain.gain.value = 0.5; 
       this.masterGain.connect(this.ctx.destination);
     }
     if (this.ctx.state === 'suspended') {
@@ -38,7 +38,6 @@ export class AudioController {
       this.stopBossAmbience();
       this.init();
       
-      // Safety check
       if (!this.ctx) return;
 
       const playSound = () => {
@@ -49,10 +48,13 @@ export class AudioController {
           else this.playMeow();
       };
 
-      playSound(); // Play immediately
+      // Play immediately
+      playSound();
       
-      // Set interval based on animal type for natural pacing
-      // Dog barks frequently, Horse/Cat less often
+      // Loop interval varies by boss personality
+      // Dog: Frequent barks (2s)
+      // Horse: Occasional neighs (3.5s)
+      // Cat: Meows (3s)
       const interval = type === 'KALIN' ? 2000 : (type === 'STILYAN' ? 3500 : 3000);
       
       this.bossInterval = setInterval(playSound, interval);
@@ -70,7 +72,7 @@ export class AudioController {
     osc.frequency.setValueAtTime(1200, t);
     osc.frequency.exponentialRampToValueAtTime(2000, t + 0.1);
 
-    gain.gain.setValueAtTime(0.5, t);
+    gain.gain.setValueAtTime(0.3, t);
     gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
 
     osc.connect(gain);
@@ -97,7 +99,7 @@ export class AudioController {
         const start = t + (i * 0.04);
         const dur = 0.3;
 
-        gain.gain.setValueAtTime(0.3, start);
+        gain.gain.setValueAtTime(0.2, start);
         gain.gain.exponentialRampToValueAtTime(0.01, start + dur);
 
         osc.connect(gain);
@@ -116,15 +118,15 @@ export class AudioController {
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
 
-    osc.type = 'sine';
-    const startFreq = isDouble ? 400 : 200;
-    const endFreq = isDouble ? 800 : 450;
+    osc.type = 'square'; // Changed to square for "8-bit jump" sound
+    const startFreq = isDouble ? 300 : 150;
+    const endFreq = isDouble ? 600 : 300;
 
     osc.frequency.setValueAtTime(startFreq, t);
-    osc.frequency.exponentialRampToValueAtTime(endFreq, t + 0.15);
+    osc.frequency.linearRampToValueAtTime(endFreq, t + 0.1);
 
-    gain.gain.setValueAtTime(0.3, t);
-    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
+    gain.gain.setValueAtTime(0.1, t);
+    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
 
     osc.connect(gain);
     gain.connect(this.masterGain);
@@ -139,7 +141,7 @@ export class AudioController {
 
     const t = this.ctx.currentTime;
     
-    // Simple noise burst for damage
+    // Noise burst
     const bufferSize = this.ctx.sampleRate * 0.5;
     const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
     const data = buffer.getChannelData(0);
@@ -151,7 +153,7 @@ export class AudioController {
     noise.buffer = buffer;
     
     const noiseGain = this.ctx.createGain();
-    noiseGain.gain.setValueAtTime(0.8, t);
+    noiseGain.gain.setValueAtTime(0.5, t);
     noiseGain.gain.exponentialRampToValueAtTime(0.01, t + 0.3);
 
     noise.connect(noiseGain);
@@ -161,26 +163,30 @@ export class AudioController {
     noise.stop(t + 0.3);
   }
 
-  // --- SIMPLIFIED & LOUD BOSS SOUNDS ---
+  // --- RETRO BOSS SOUNDS (LOUD & SIMPLE) ---
 
   playMeow() {
-    // Basic Cat: High Sine wave sliding down
+    // CAT: High pitch sine wave sliding up then down
+    // Sounds like: "WEEE-oooo"
     if (!this.ctx || !this.masterGain) return;
     const t = this.ctx.currentTime;
     
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
     
-    osc.type = 'sine'; // Pure tone
+    // Triangle wave is distinct but not too harsh
+    osc.type = 'triangle'; 
     
-    // Meee-ooo-w
-    osc.frequency.setValueAtTime(800, t); 
-    osc.frequency.exponentialRampToValueAtTime(1200, t + 0.2); // Up
-    osc.frequency.exponentialRampToValueAtTime(400, t + 0.6); // Down
+    // Pitch: Start mid, go high, go low
+    osc.frequency.setValueAtTime(400, t); 
+    osc.frequency.linearRampToValueAtTime(800, t + 0.3); // Me...
+    osc.frequency.linearRampToValueAtTime(300, t + 0.6); // ...ow
 
+    // Volume
     gain.gain.setValueAtTime(0, t);
-    gain.gain.linearRampToValueAtTime(0.8, t + 0.1); 
-    gain.gain.linearRampToValueAtTime(0.01, t + 0.6);
+    gain.gain.linearRampToValueAtTime(0.5, t + 0.1); 
+    gain.gain.linearRampToValueAtTime(0.5, t + 0.4); 
+    gain.gain.linearRampToValueAtTime(0, t + 0.6);
 
     osc.connect(gain);
     gain.connect(this.masterGain);
@@ -190,56 +196,61 @@ export class AudioController {
   }
 
   playBark() {
-    // Basic Dog: Low Square wave pulse
+    // DOG: Rough low square wave
+    // Sounds like: "ROWF"
     if (!this.ctx || !this.masterGain) return;
     const t = this.ctx.currentTime;
     
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
     
-    osc.type = 'square'; // Buzz/Rough sound
+    // Square wave cuts through the mix
+    osc.type = 'square'; 
     
-    // WOOF (Quick pitch drop)
+    // Pitch: Start mid-low, drop fast
     osc.frequency.setValueAtTime(300, t);
     osc.frequency.exponentialRampToValueAtTime(100, t + 0.15); 
 
-    gain.gain.setValueAtTime(1.0, t); // Loud
-    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
+    // Volume: Short and punchy
+    gain.gain.setValueAtTime(0.4, t); 
+    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.2);
 
     osc.connect(gain);
     gain.connect(this.masterGain);
 
     osc.start(t);
-    osc.stop(t + 0.15);
+    osc.stop(t + 0.2);
   }
 
   playHorse() {
-    // Basic Horse: Sawtooth with Vibrato
+    // HORSE: Sawtooth wave with heavy vibrato
+    // Sounds like: "IIIIH-hi-hi-hi"
     if (!this.ctx || !this.masterGain) return;
     const t = this.ctx.currentTime;
     
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
     
-    osc.type = 'sawtooth'; // Bright/Harsh
+    // Sawtooth is very buzzy/bright
+    osc.type = 'sawtooth'; 
     
-    // Whinny pitch drop
-    osc.frequency.setValueAtTime(1500, t);
-    osc.frequency.linearRampToValueAtTime(600, t + 0.8);
+    // Pitch: High sliding down
+    osc.frequency.setValueAtTime(1000, t);
+    osc.frequency.linearRampToValueAtTime(500, t + 0.8);
 
-    // Create Vibrato manually via frequency automation points or LFO
-    // Simple LFO approach
+    // Vibrato (The shake)
     const lfo = this.ctx.createOscillator();
-    lfo.frequency.value = 15; // Fast shake
+    lfo.frequency.value = 15; // Speed of shake
     const lfoGain = this.ctx.createGain();
-    lfoGain.gain.value = 200; // Pitch depth
+    lfoGain.gain.value = 150; // Depth of shake
 
     lfo.connect(lfoGain);
     lfoGain.connect(osc.frequency);
 
+    // Volume
     gain.gain.setValueAtTime(0, t);
-    gain.gain.linearRampToValueAtTime(0.6, t + 0.1);
-    gain.gain.linearRampToValueAtTime(0.01, t + 0.8);
+    gain.gain.linearRampToValueAtTime(0.3, t + 0.1);
+    gain.gain.linearRampToValueAtTime(0, t + 0.8);
 
     osc.connect(gain);
     gain.connect(this.masterGain);
