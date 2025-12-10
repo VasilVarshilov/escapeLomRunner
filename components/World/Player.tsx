@@ -1,3 +1,4 @@
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -67,11 +68,11 @@ export const Player: React.FC = () => {
           glowMaterial: new THREE.MeshBasicMaterial({ color: glowColor }),
           shadowMaterial: new THREE.MeshBasicMaterial({ color: '#000000', opacity: 0.3, transparent: true })
       };
-  }, [isImmortalityActive]); // Only recreate if immortality state changes (for color shift)
+  }, [isImmortalityActive]); 
 
   // --- Reset State on Game Start ---
   useEffect(() => {
-      if (status === GameStatus.PLAYING) {
+      if (status === GameStatus.PLAYING || status === GameStatus.BOSS_FIGHT) {
           isJumping.current = false;
           jumpsPerformed.current = 0;
           velocityY.current = 0;
@@ -81,7 +82,7 @@ export const Player: React.FC = () => {
       }
   }, [status]);
   
-  // Safety: Clamp lane if laneCount changes (e.g. restart)
+  // Safety: Clamp lane if laneCount changes
   useEffect(() => {
       const maxLane = Math.floor(laneCount / 2);
       if (Math.abs(lane) > maxLane) {
@@ -103,21 +104,30 @@ export const Player: React.FC = () => {
         // Double Jump (Mid-air)
         audio.playJump(true);
         jumpsPerformed.current += 1;
-        velocityY.current = JUMP_FORCE; // Reset velocity upwards
-        spinRotation.current = 0; // Start flip
+        velocityY.current = JUMP_FORCE; 
+        spinRotation.current = 0; 
     }
+  };
+
+  const triggerAction = () => {
+      if (status === GameStatus.BOSS_FIGHT) {
+          // Shoot in boss fight
+          window.dispatchEvent(new CustomEvent('player-shoot'));
+      } else {
+          activateImmortality();
+      }
   };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (status !== GameStatus.PLAYING) return;
+      if (status !== GameStatus.PLAYING && status !== GameStatus.BOSS_FIGHT) return;
       const maxLane = Math.floor(laneCount / 2);
 
       if (e.key === 'ArrowLeft') setLane(l => Math.max(l - 1, -maxLane));
       else if (e.key === 'ArrowRight') setLane(l => Math.min(l + 1, maxLane));
       else if (e.key === 'ArrowUp' || e.key === 'w') triggerJump();
       else if (e.key === ' ' || e.key === 'Enter') {
-          activateImmortality();
+          triggerAction();
       }
     };
 
@@ -132,7 +142,7 @@ export const Player: React.FC = () => {
     };
 
     const handleTouchEnd = (e: TouchEvent) => {
-        if (status !== GameStatus.PLAYING) return;
+        if (status !== GameStatus.PLAYING && status !== GameStatus.BOSS_FIGHT) return;
         const deltaX = e.changedTouches[0].clientX - touchStartX.current;
         const deltaY = e.changedTouches[0].clientY - touchStartY.current;
         const maxLane = Math.floor(laneCount / 2);
@@ -143,8 +153,9 @@ export const Player: React.FC = () => {
              else setLane(l => Math.max(l - 1, -maxLane));
         } else if (Math.abs(deltaY) > Math.abs(deltaX) && deltaY < -30) {
             triggerJump();
-        } else if (Math.abs(deltaX) < 10 && Math.abs(deltaY) < 10) {
-            activateImmortality();
+        } else {
+            // Tap for action
+             triggerAction();
         }
     };
 
@@ -159,7 +170,7 @@ export const Player: React.FC = () => {
   // --- Animation Loop ---
   useFrame((state, delta) => {
     if (!groupRef.current) return;
-    if (status !== GameStatus.PLAYING && status !== GameStatus.SHOP) return;
+    if (status !== GameStatus.PLAYING && status !== GameStatus.SHOP && status !== GameStatus.BOSS_FIGHT) return;
 
     // 1. Horizontal Position
     targetX.current = lane * LANE_WIDTH;
@@ -197,7 +208,7 @@ export const Player: React.FC = () => {
 
     // Banking Rotation
     const xDiff = targetX.current - groupRef.current.position.x;
-    groupRef.current.rotation.z = -xDiff * 0.2; 
+    groupRef.current.rotation.z = xDiff * 0.2; // Reversed bank for rotated character?
     groupRef.current.rotation.x = isJumping.current ? 0.1 : 0.05; 
 
     // 3. Skeletal Animation
@@ -269,7 +280,8 @@ export const Player: React.FC = () => {
   }, [takeDamage, isImmortalityActive]);
 
   return (
-    <group ref={groupRef} position={[0, 0, 0]}>
+    // Rotated 180 degrees (Math.PI) on Y axis to show back
+    <group ref={groupRef} position={[0, 0, 0]} rotation={[0, Math.PI, 0]}>
       <group ref={bodyRef} position={[0, 1.1, 0]}> 
         
         {/* Torso */}
